@@ -72,14 +72,27 @@ public class Practice14FlipboardView extends View {
         int x = centerX - bitmapWidth / 2;
         int y = centerY - bitmapHeight / 2;
 
+
+        // 第一遍绘制：上半部分
+        canvas.save();
+        canvas.clipRect(0, 0, getWidth(), centerY);
+        canvas.drawBitmap(bitmap, x, y, paint);
+        canvas.restore();
+
+        // 第二遍绘制：下半部分
         canvas.save();
 
-        camera.save();
-        camera.rotateX(degree);
-        canvas.translate(centerX, centerY);
-        camera.applyToCanvas(canvas);
-        canvas.translate(-centerX, -centerY);
-        camera.restore();
+        if (degree < 90) {
+            canvas.clipRect(0, centerY, getWidth(), getHeight());
+        } else {
+            canvas.clipRect(0, 0, getWidth(), centerY);
+        }
+        camera.save();// 保存 Camera 的状态
+        camera.rotateX(degree);// 旋转 Camera 的三维空间
+        canvas.translate(centerX, centerY);// 旋转之后把投影移动回来
+        camera.applyToCanvas(canvas);// 把旋转投影到 Canvas
+        canvas.translate(-centerX, -centerY);// 旋转之前把绘制内容移动到轴心（原点）
+        camera.restore();// 恢复 Camera 的状态
 
         canvas.drawBitmap(bitmap, x, y, paint);
         canvas.restore();
